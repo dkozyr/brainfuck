@@ -38,7 +38,7 @@ _nothing_to_print:  xor     RAX, RAX                    ; 0 - sys_read
                     syscall
 
                     pop     RBX
-                    mov     RDI, output
+                    mov     RDI, output                 ; reset output buffer
 op_open:            cmp     byte [RBX], 0
                     jz      $+1000000
 op_close:           cmp     byte [RBX], 0
@@ -80,12 +80,12 @@ ID_SET_ZERO         equ     9
 ; ------------------------------------------------------------------------------
 %macro process_script_symbol 3
                     cmp     AL, %1
-                    jnz     test_next_%2
+                    jnz     .test_next_%2
 
                     add     RDX, %3
                     mov     AL, %2
                     jmp     _good_symbol
-test_next_%2:
+.test_next_%2:
 %endmacro
 
 %macro process_script_symbol_with_counter 3
@@ -173,18 +173,18 @@ _end_of_stream:     mov     byte [RDI], ID_EOS
                     mov     RSI, RDX
                     push    RBX
                     push    RDX
-                    ; find corresponding bracket
-                    mov     RDX, 1
+
+                    mov     RDX, 1                      ; find corresponding bracket on RDX = 0
     %1_next:        %1      RBX, 2 * 8
                     %2      RSI
                     mov     AH, [RSI]
                     cmp     AH, %3
-                    jnz     %1_next1
+                    jnz     .skip1
                     inc     RDX
-    %1_next1:       cmp     AH, %4
-                    jnz     %1_next2
+    .skip1:         cmp     AH, %4
+                    jnz     .skip2
                     dec     RDX
-    %1_next2:       or      RDX, RDX
+    .skip2:         or      RDX, RDX
                     jnz     %1_next
 
                     mov     RCX, [RBX]
@@ -240,7 +240,7 @@ _next_symbol:       inc     RDX
                     process_script_symbol_to_code ID_SET_ZERO, op_set_zero, OP_SET_ZERO_SIZE
 
                     cmp     AL, ID_OPEN
-                    jnz     _next7
+                    jnz     _check_close
 
                     find_offset add, inc, ID_OPEN, ID_CLOSE
 
@@ -249,8 +249,8 @@ _next_symbol:       inc     RDX
                     mov     RCX, OP_OPEN_SIZE
                     jmp     _copy_and_process_next_symbol
 
-_next7:             cmp     AL, ID_CLOSE
-                    jnz     _next8
+_check_close:       cmp     AL, ID_CLOSE
+                    jnz     _check_eos
 
                     find_offset sub, dec, ID_CLOSE, ID_OPEN
 
@@ -259,15 +259,14 @@ _next7:             cmp     AL, ID_CLOSE
                     mov     RCX, OP_CLOSE_SIZE
                     jmp     _copy_and_process_next_symbol
 
-_next8:             cmp     AL, ID_EOS
+_check_eos:         cmp     AL, ID_EOS
                     jz      _stop_processing
 
 _copy_and_process_next_symbol:
                     rep     movsb                       ; RDI - dest, RSI - src, RCX - count
                     jmp     _next_symbol
 
-_stop_processing:
-                    mov     RSI, op_eos
+_stop_processing:   mov     RSI, op_eos
                     mov     RCX, OP_EOS_SIZE
                     rep     movsb
                     ret
