@@ -78,6 +78,51 @@ ID_CLOSE            equ     8
 ID_SET_ZERO         equ     9
 
 ; ------------------------------------------------------------------------------
+_start:             xor     RAX, RAX
+                    mov     RCX, 3750                   ; 30000 / 8 = 3750
+                    mov     RDI, result
+                    rep     stosq
+                    
+                    pop     RAX
+                    cmp     RAX, 2
+                    jnz     _exit
+
+                    pop     RAX
+                    pop     RDI                         ; filename
+                    xor     RSI, RSI                    ;
+                    mov     RAX, 2                      ; sys_open
+                    syscall
+                    mov     [fd], RAX
+
+                    mov     RDI, RAX                    ; file descriptor
+                    mov     RSI, script                 ; buffer
+                    mov     RDX, kMaxScriptLength       ; max output_length
+                    xor     RAX, RAX                    ; sys_read
+                    syscall
+
+                    or      RAX, RAX
+                    jz      _close_fd_and_exit
+
+                    call    process_symbols_and_remove_useless
+                    call    prepare_the_code
+
+                    ; execute generated code -----------------------------------
+                    mov     RBX, result
+                    mov     RDI, output
+
+                    push    _close_fd_and_exit
+                    jmp     the_code
+
+                    ; exit -----------------------------------------------------
+_close_fd_and_exit: mov     RAX, 3                      ; sys_close
+                    mov     RDI, [fd]
+                    syscall
+
+_exit:              mov     RAX, 60                     ; exit
+                    xor     RDI, RDI                    ; exit code - 0
+                    syscall
+
+; ------------------------------------------------------------------------------
 %macro process_script_symbol 3
                     cmp     AL, %1
                     jnz     .test_next_%2
@@ -270,48 +315,3 @@ _stop_processing:   mov     RSI, op_eos
                     mov     RCX, OP_EOS_SIZE
                     rep     movsb
                     ret
-
-; ------------------------------------------------------------------------------
-_start:             xor     RAX, RAX
-                    mov     RCX, 3750                   ; 30000 / 8 = 3750
-                    mov     RDI, result
-                    rep     stosq
-                    
-                    pop     RAX
-                    cmp     RAX, 2
-                    jnz     _exit
-
-                    pop     RAX
-                    pop     RDI                         ; filename
-                    xor     RSI, RSI                    ;
-                    mov     RAX, 2                      ; sys_open
-                    syscall
-                    mov     [fd], RAX
-
-                    mov     RDI, RAX                    ; file descriptor
-                    mov     RSI, script                 ; buffer
-                    mov     RDX, kMaxScriptLength       ; max output_length
-                    xor     RAX, RAX                    ; sys_read
-                    syscall
-
-                    or      RAX, RAX
-                    jz      _close_fd_and_exit
-
-                    call    process_symbols_and_remove_useless
-                    call    prepare_the_code
-
-                    ; execute generated code -----------------------------------
-                    mov     RBX, result
-                    mov     RDI, output
-
-                    push    _close_fd_and_exit
-                    jmp     the_code
-
-                    ; exit -----------------------------------------------------
-_close_fd_and_exit: mov     RAX, 3                      ; sys_close
-                    mov     RDI, [fd]
-                    syscall
-
-_exit:              mov     RAX, 60                     ; exit
-                    xor     RDI, RDI                    ; exit code - 0
-                    syscall
