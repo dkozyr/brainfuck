@@ -1,4 +1,4 @@
-filename="interpreter"
+filename="interpreter_with_compiler"
 
 rm -f brainfuck
 nasm -f elf64 $filename.asm && ld -n -s $filename.o -o brainfuck
