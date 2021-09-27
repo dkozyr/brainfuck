@@ -21,6 +21,11 @@ echo "8" > digits.in
 time ./brainfuck ./examples/pi-digits.bf < digits.in
 rm -f digits.in
 
+echo ; echo "Script: Factor"
+echo "133333333333337" > factor.in
+time ./brainfuck ./examples/factor.bf < factor.in
+rm -f factor.in
+
 echo ; echo "Script: Chess"
 time ./brainfuck ./examples/chess.bf
 
