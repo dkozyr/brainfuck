@@ -1,4 +1,4 @@
-# Fastest Brainfuck Interpreter (NASM, x64)
+# Fast Brainfuck Interpreter (NASM, x64)
 
 ## Mandelbrot (tiny)
 
@@ -31,3 +31,7 @@ real	0m0,261s
 user	0m0,261s
 sys	0m0,000s
 ```
+
+## Fastest Brainfuck Interpreter
+
+https://github.com/rdebath/Brainfuck/tree/master/tritium
