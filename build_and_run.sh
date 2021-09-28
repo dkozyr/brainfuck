@@ -1,4 +1,4 @@
-filename="fastest"
+filename="fast"
 
 rm -f brainfuck
 nasm -f elf64 $filename.asm && ld -n -s $filename.o -o brainfuck
