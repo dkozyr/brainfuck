@@ -1,3 +1,8 @@
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+
+nasm -f elf64 ../operand_writer.asm
+
 # Fast Brainfuck Interpreter (NASM, x64)
 
 ## Mandelbrot (tiny)
