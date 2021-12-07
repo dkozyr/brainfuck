@@ -3,7 +3,6 @@
 #include "Operand.h"
 #include "operand_writer/OperandWriter.h"
 
-#include <vector>
 #include <stack>
 
 class ExecutorAsm {

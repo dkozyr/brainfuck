@@ -2,8 +2,6 @@
 
 #include "Operand.h"
 
-#include <vector>
-
 class Compiler {
 public:
     Compiler() = default;

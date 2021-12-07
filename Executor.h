@@ -3,7 +3,6 @@
 #include "Operand.h"
 #include "BracketMap.h"
 
-#include <vector>
 #include <stack>
 
 class Executor {
