@@ -26,25 +26,27 @@ public:
                     optimized.push_back(Set{.value = x.value, .offset = offset});
                 },
                 [&](const WhileBegin& x) {
-                    // while_begin_offset.push(offset);
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(WhileBegin{.offset = offset});
+
+                    while_begin_offset.push(offset);
                 },
                 [&](const WhileEnd& x) {
-                    // while_begin_offset.pop();
                     PushArithmeticOperands(offset_to_delta, optimized);
+
+                    offset_prev = while_begin_offset.top();
+                    while_begin_offset.pop();
                     PushDeltaOperand(offset, offset_prev, optimized);
+                    offset = offset_prev;
+
                     optimized.push_back(WhileEnd{.offset = offset});
                 },
                 [&](const Output& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(Output{.offset = offset});
                 },
                 [&](const Input& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(Input{.offset = offset});
                 }
             }, operand);
@@ -67,7 +69,7 @@ private:
         offset_to_delta.clear();
     }
 
-    static void PushDeltaOperand(int32_t& offset, int32_t& offset_prev, std::vector<Operand>& optimized) {
+    static void PushDeltaOperand(const int32_t offset, const int32_t offset_prev, std::vector<Operand>& optimized) {
         if(offset != offset_prev) {
             const auto ptr_delta = offset - offset_prev;
             if(ptr_delta > 0) {
@@ -76,7 +78,5 @@ private:
                 optimized.push_back(PtrSub{.count = static_cast<size_t>(-ptr_delta)});
             }
         }
-        offset_prev = 0;
-        offset = 0;
     }
 };
