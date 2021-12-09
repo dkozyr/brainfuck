@@ -2,7 +2,7 @@
 
 #include "Operand.h"
 
-// #include <optional>
+#include <stack>
 #include <unordered_map>
 
 class Optimizer {
@@ -12,6 +12,7 @@ public:
 
         std::vector<Operand> optimized;
         std::unordered_map<int32_t, int64_t> offset_to_delta;
+        std::stack<int32_t> while_begin_offset;
         int32_t offset = 0, offset_prev = 0;
         for(size_t i = 0; i < size; ++i) {
             const auto& operand = program[i];
@@ -20,17 +21,18 @@ public:
                 [&](const Sub& x) { offset_to_delta[offset] -= x.count; },
                 [&](const PtrAdd& x) { offset += x.count; },
                 [&](const PtrSub& x) { offset -= x.count; },
-                [&](const auto& x) {
+                [&](const Set& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(Set{.value = x.value, .offset = offset});
                 },
                 [&](const WhileBegin& x) {
+                    // while_begin_offset.push(offset);
                     PushArithmeticOperands(offset_to_delta, optimized);
                     PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(WhileBegin{.offset = offset});
                 },
                 [&](const WhileEnd& x) {
+                    // while_begin_offset.pop();
                     PushArithmeticOperands(offset_to_delta, optimized);
                     PushDeltaOperand(offset, offset_prev, optimized);
                     optimized.push_back(WhileEnd{.offset = offset});
