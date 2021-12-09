@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS " -pthread")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+add_compile_definitions(EXAMPLES_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/examples\")
+
 find_package(Boost REQUIRED iostreams)
 include_directories(${BOOST_INCLUDE_DIRS})
 

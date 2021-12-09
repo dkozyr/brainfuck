@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Operand.h"
+#include "Optimizer.h"
 #include "BracketMap.h"
 
 #include <stack>
@@ -10,30 +10,31 @@ public:
     static void Run(const std::vector<Operand>& program) {
         std::vector<uint8_t> data(kBrainfuckDataSize, 0);
 
-        const auto bracket_map = CreateBracketMap(program);
+        const auto optimized = Optimizer::ProcessOffsets(program);
+        const auto bracket_map = CreateBracketMap(optimized);
 
         size_t idx = 0;
-        size_t offset = 0;
-        while(idx < program.size()) {
-            const auto& operand = program.at(idx);
+        int32_t offset = 0;
+        while(idx < optimized.size()) {
+            const auto& operand = optimized.at(idx);
             std::visit(overloaded {
-                [&](const Add& x) { data[offset] += x.count; },
-                [&](const Sub& x) { data[offset] -= x.count; },
-                [&](const Set& x) { data[offset] = x.value; },
+                [&](const Add& x) { data[offset + x.offset] += x.count; },
+                [&](const Sub& x) { data[offset + x.offset] -= x.count; },
+                [&](const Set& x) { data[offset + x.offset] = x.value; },
                 [&](const PtrAdd& x) { offset += x.count; },
                 [&](const PtrSub& x) { offset -= x.count; },
-                [&](const WhileBegin&) {
-                    if(data[offset] == 0) {
+                [&](const WhileBegin& x) {
+                    if(data[offset + x.offset] == 0) {
                         idx = bracket_map.left.at(idx);
                     }
                 },
-                [&](const WhileEnd&) {
-                    if(data[offset] != 0) {
+                [&](const WhileEnd& x) {
+                    if(data[offset + x.offset] != 0) {
                         idx = bracket_map.right.at(idx);
                     }
                 },
-                [&](const Output&) { std::cout << data[offset]; },
-                [&](const Input&) { std::cin >> data[offset]; },
+                [&](const Output& x) { std::cout << data[offset + x.offset]; },
+                [&](const Input& x) { std::cin >> data[offset + x.offset]; },
             }, operand);
             ++idx;
         }

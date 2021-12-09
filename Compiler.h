@@ -39,7 +39,6 @@ public:
                                 Process(Set{});
                                 break;
                             }
-
                         }
                     }
                     Process(WhileEnd{});
@@ -51,6 +50,8 @@ public:
 
     void ExecuteOptimized() { ExecutorAsm::Run(_program); }
     void Execute() { Executor::Run(_program); }
+
+    const std::vector<Operand>& GetProgram() const { return _program; }
 
 private:
     void Process(const Operand& operand) {
