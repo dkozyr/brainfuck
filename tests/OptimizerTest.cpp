@@ -54,15 +54,26 @@ TEST(Optimizer, While) {
 
 TEST(Optimizer, Set) {
     std::vector<Operand> program = {
-        Add{.count = 1},
+        WhileBegin{},
+        Sub{.count = 1},
+        PtrAdd{.count = 1},
         Set{.value = 10},
+        PtrSub{.count = 1},
+        WhileEnd{},
+        Set{.value = 42},
     };
 
     std::vector<Operand> target = {
-        Set{.value = 10},
+        WhileBegin{},
+        Sub{.count = 1},
+        Set{.value = 10, .offset = 1},
+        WhileEnd{},
+        Set{.value = 42},
     };
 
     auto optimized = Optimizer::ProcessOffsets(program);
+    // DebugProgram(program);
+    // DebugProgram(optimized);
     ASSERT_EQ(target.size(), optimized.size());
     EXPECT_EQ(target, optimized);
 }
