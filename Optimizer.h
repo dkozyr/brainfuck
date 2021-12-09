@@ -22,6 +22,7 @@ public:
                 [&](const PtrAdd& x) { offset += x.count; },
                 [&](const PtrSub& x) { offset -= x.count; },
                 [&](const Set& x) {
+                    offset_to_delta[offset] = 0;
                     PushArithmeticOperands(offset_to_delta, optimized);
                     optimized.push_back(Set{.value = x.value, .offset = offset});
                 },
@@ -32,10 +33,10 @@ public:
                     while_begin_offset.push(offset);
                 },
                 [&](const WhileEnd& x) {
-                    PushArithmeticOperands(offset_to_delta, optimized);
-
                     offset_prev = while_begin_offset.top();
                     while_begin_offset.pop();
+
+                    PushArithmeticOperands(offset_to_delta, optimized);
                     PushDeltaOperand(offset, offset_prev, optimized);
                     offset = offset_prev;
 

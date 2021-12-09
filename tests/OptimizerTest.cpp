@@ -51,3 +51,18 @@ TEST(Optimizer, While) {
     ASSERT_EQ(target.size(), optimized.size());
     EXPECT_EQ(target, optimized);
 }
+
+TEST(Optimizer, Set) {
+    std::vector<Operand> program = {
+        Add{.count = 1},
+        Set{.value = 10},
+    };
+
+    std::vector<Operand> target = {
+        Set{.value = 10},
+    };
+
+    auto optimized = Optimizer::ProcessOffsets(program);
+    ASSERT_EQ(target.size(), optimized.size());
+    EXPECT_EQ(target, optimized);
+}
