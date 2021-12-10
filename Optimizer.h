@@ -12,10 +12,9 @@ public:
 
         std::vector<Operand> optimized;
         std::unordered_map<int32_t, int64_t> offset_to_delta;
-        std::stack<int32_t> while_begin_offset;
         int32_t offset = 0, offset_prev = 0;
-        for(size_t i = 0; i < size; ++i) {
-            const auto& operand = program[i];
+        for(size_t idx = 0; idx < size; ++idx) {
+            const auto& operand = program[idx];
             std::visit(overloaded {
                 [&](const Add& x) { offset_to_delta[offset] += x.count; },
                 [&](const Sub& x) { offset_to_delta[offset] -= x.count; },
@@ -28,19 +27,13 @@ public:
                 },
                 [&](const WhileBegin& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    optimized.push_back(WhileBegin{.offset = offset});
-
-                    while_begin_offset.push(offset);
+                    
+                    idx++;
+                    auto while_optimized = ProcessWhile(program, idx, offset);
+                    optimized.insert(optimized.end(), while_optimized.begin(), while_optimized.end());
                 },
                 [&](const WhileEnd& x) {
-                    offset_prev = while_begin_offset.top();
-                    while_begin_offset.pop();
-
-                    PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, offset_prev, optimized);
-                    offset = offset_prev;
-
-                    optimized.push_back(WhileEnd{.offset = offset});
+                    throw -1;
                 },
                 [&](const Output& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
@@ -57,6 +50,69 @@ public:
     }
 
 private:
+    static std::vector<Operand> ProcessWhile(const std::vector<Operand>& program, size_t& idx, int32_t offset) {
+        const auto size = program.size();
+        const auto while_begin_offset = offset;
+
+        std::vector<Operand> optimized = {WhileBegin{.offset = offset}};
+        std::unordered_map<int32_t, int64_t> offset_to_delta;
+        bool optimize = true;
+        while(idx < size) {
+            const auto& operand = program[idx];
+            auto while_end = std::visit(overloaded {
+                [&](const Add& x) { offset_to_delta[offset] += x.count; return false; },
+                [&](const Sub& x) { offset_to_delta[offset] -= x.count; return false; },
+                [&](const PtrAdd& x) { offset += x.count; return false; },
+                [&](const PtrSub& x) { offset -= x.count; return false; },
+                [&](const Set& x) {
+                    offset_to_delta[offset] = 0;
+                    PushArithmeticOperands(offset_to_delta, optimized);
+                    optimized.push_back(Set{.value = x.value, .offset = offset});
+                    return false;
+                },
+                [&](const WhileBegin& x) {
+                    PushArithmeticOperands(offset_to_delta, optimized);
+
+                    optimize = false;
+                    idx++;
+                    auto while_optimized = ProcessWhile(program, idx, offset);
+                    optimized.insert(optimized.end(), while_optimized.begin(), while_optimized.end());
+                    return false;
+                },
+                [&](const WhileEnd& x) {
+                    if(optimize) {
+                        //TODO
+                    }
+
+                    PushArithmeticOperands(offset_to_delta, optimized);
+                    PushDeltaOperand(offset, while_begin_offset, optimized);
+
+                    offset = while_begin_offset;
+                    optimized.push_back(WhileEnd{.offset = offset});
+                    return true;
+                },
+                [&](const Output& x) {
+                    optimize = false;
+                    PushArithmeticOperands(offset_to_delta, optimized);
+                    optimized.push_back(Output{.offset = offset});
+                    return false;
+                },
+                [&](const Input& x) {
+                    optimize = false;
+                    PushArithmeticOperands(offset_to_delta, optimized);
+                    optimized.push_back(Input{.offset = offset});
+                    return false;
+                }
+            }, operand);
+
+            if(while_end) {
+                return optimized;
+            }
+            idx++;
+        }
+        throw -1;
+    }
+
     static void PushArithmeticOperands(std::unordered_map<int32_t, int64_t>& offset_to_delta, std::vector<Operand>& optimized) {
         for(auto& value: offset_to_delta) {
             if(value.second > 0) {
