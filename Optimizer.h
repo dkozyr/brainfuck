@@ -11,13 +11,14 @@ public:
         const auto size = program.size();
 
         std::vector<Operand> optimized;
-        std::unordered_map<int32_t, int64_t> offset_to_delta;
+        std::unordered_map<int32_t, int32_t> offset_to_delta;
         int32_t offset = 0, offset_prev = 0;
         for(size_t idx = 0; idx < size; ++idx) {
             const auto& operand = program[idx];
             std::visit(overloaded {
                 [&](const Add& x) { offset_to_delta[offset] += x.count; },
                 [&](const Sub& x) { offset_to_delta[offset] -= x.count; },
+                [&](const Mul& x) { /*impossible*/ throw -1; },
                 [&](const PtrAdd& x) { offset += x.count; },
                 [&](const PtrSub& x) { offset -= x.count; },
                 [&](const Set& x) {
@@ -55,13 +56,14 @@ private:
         const auto while_begin_offset = offset;
 
         std::vector<Operand> optimized = {WhileBegin{.offset = offset}};
-        std::unordered_map<int32_t, int64_t> offset_to_delta;
+        std::unordered_map<int32_t, int32_t> offset_to_delta;
         bool optimize = true;
         while(idx < size) {
             const auto& operand = program[idx];
             auto while_end = std::visit(overloaded {
                 [&](const Add& x) { offset_to_delta[offset] += x.count; return false; },
                 [&](const Sub& x) { offset_to_delta[offset] -= x.count; return false; },
+                [&](const Mul& x) { /*impossible*/ throw -1; return false; },
                 [&](const PtrAdd& x) { offset += x.count; return false; },
                 [&](const PtrSub& x) { offset -= x.count; return false; },
                 [&](const Set& x) {
@@ -80,15 +82,22 @@ private:
                     return false;
                 },
                 [&](const WhileEnd& x) {
-                    if(optimize) {
-                        //TODO
+                    const auto need_optimization = optimize && (offset == while_begin_offset) && (offset_to_delta[offset] == -1); //TODO: all cases for the last condition
+                    if(need_optimization) {
+                        optimized.erase(optimized.begin()); //remove WhileBegin
+                        for(auto& value: offset_to_delta) {
+                            if(value.first != offset) {
+                                optimized.push_back(Mul{.offset = value.first, .value = value.second, .factor_offset = offset});
+                            }
+                        }
+                        optimized.push_back(Set{.value = 0, .offset = offset});
+                    } else {
+                        PushArithmeticOperands(offset_to_delta, optimized);
+                        PushDeltaOperand(offset, while_begin_offset, optimized);
+
+                        offset = while_begin_offset;
+                        optimized.push_back(WhileEnd{.offset = offset});
                     }
-
-                    PushArithmeticOperands(offset_to_delta, optimized);
-                    PushDeltaOperand(offset, while_begin_offset, optimized);
-
-                    offset = while_begin_offset;
-                    optimized.push_back(WhileEnd{.offset = offset});
                     return true;
                 },
                 [&](const Output& x) {
@@ -113,7 +122,7 @@ private:
         throw -1;
     }
 
-    static void PushArithmeticOperands(std::unordered_map<int32_t, int64_t>& offset_to_delta, std::vector<Operand>& optimized) {
+    static void PushArithmeticOperands(std::unordered_map<int32_t, int32_t>& offset_to_delta, std::vector<Operand>& optimized) {
         for(auto& value: offset_to_delta) {
             if(value.second > 0) {
                 optimized.push_back(Add{.count = static_cast<size_t>(value.second), .offset = value.first});

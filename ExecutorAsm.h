@@ -35,6 +35,9 @@ public:
                 [&](const Set& x) {
                     ptr += OperandWriterSet(ptr, x.value);
                 },
+                [&](const Mul& x) {
+                    //TODO: implement
+                },
                 [&](const PtrAdd& x) {
                     if(x.count == 1) {
                         ptr += OperandWriterPtrInc(ptr);

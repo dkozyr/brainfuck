@@ -23,6 +23,12 @@ struct Set{
     int32_t offset = 0;
 };
 
+struct Mul{
+    int32_t offset = 0;
+    int32_t value = 0;
+    int32_t factor_offset = 0;
+};
+
 struct PtrAdd{
     size_t count = 1;
 };
@@ -47,11 +53,12 @@ struct Input{
     int32_t offset = 0;
 };
 
-using Operand = std::variant<Add, Sub, Set, PtrAdd, PtrSub, WhileBegin, WhileEnd, Output, Input>;
+using Operand = std::variant<Add, Sub, Set, Mul, PtrAdd, PtrSub, WhileBegin, WhileEnd, Output, Input>;
 
 inline bool operator==(const Add& left, const Add& right) { return (left.count == right.count) && (left.offset == right.offset); }
 inline bool operator==(const Sub& left, const Sub& right) { return (left.count == right.count) && (left.offset == right.offset); }
 inline bool operator==(const Set& left, const Set& right) { return (left.value == right.value) && (left.offset == right.offset); }
+inline bool operator==(const Mul& left, const Mul& right) { return (left.value == right.value) && (left.offset == right.offset) && (left.factor_offset == right.factor_offset); }
 inline bool operator==(const PtrAdd& left, const PtrAdd& right) { return (left.count == right.count); }
 inline bool operator==(const PtrSub& left, const PtrSub& right) { return (left.count == right.count); }
 inline bool operator==(const WhileBegin& left, const WhileBegin& right) { return (left.offset == right.offset); }
@@ -64,6 +71,7 @@ inline void DebugOperand(const Operand& operand) {
         [&](const Add& x) { std::cout << "+[" << x.offset << "]" << x.count << "|"; },
         [&](const Sub& x) { std::cout << "-[" << x.offset << "]" << x.count << "|"; },
         [&](const Set& x) { std::cout << "s[" << x.offset << "]" << x.value << "|"; },
+        [&](const Mul& x) { std::cout << "m[" << x.offset << "]" << x.value << "[" << x.factor_offset << "]|"; },
         [&](const PtrAdd& x) { std::cout << "p+" << x.count << "|"; },
         [&](const PtrSub& x) { std::cout << "p-" << x.count << "|"; },
         [&](const WhileBegin& x) { std::cout << "B[" << x.offset << "]|"; },
