@@ -77,3 +77,26 @@ TEST(Optimizer, Set) {
     ASSERT_EQ(target.size(), optimized.size());
     EXPECT_EQ(target, optimized);
 }
+
+TEST(Optimizer, Mul) {
+    std::vector<Operand> program = {
+        WhileBegin{},
+        PtrAdd{.count = 1},
+        Add{.count = 1},
+        PtrAdd{.count = 1},
+        Add{.count = 2},
+        PtrSub{.count = 2},
+        Sub{.count = 1},
+        WhileEnd{},
+    };
+
+    std::vector<Operand> target = {
+        Mul{.offset = 2, .value = 2, .factor_offset = 0},
+        Mul{.offset = 1, .value = 1, .factor_offset = 0},
+        Set{.value = 0, .offset = 0},
+    };
+
+    auto optimized = Optimizer::ProcessOffsets(program);
+    ASSERT_EQ(target.size(), optimized.size());
+    EXPECT_EQ(target, optimized);
+}

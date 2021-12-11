@@ -30,8 +30,8 @@ public:
                     PushArithmeticOperands(offset_to_delta, optimized);
                     
                     idx++;
-                    auto while_optimized = ProcessWhile(program, idx, offset);
-                    optimized.insert(optimized.end(), while_optimized.begin(), while_optimized.end());
+                    auto optimized_while = ProcessWhile(program, idx, offset);
+                    optimized.insert(optimized.end(), optimized_while.begin(), optimized_while.end());
                 },
                 [&](const WhileEnd& x) {
                     throw -1;
@@ -77,8 +77,8 @@ private:
 
                     optimize = false;
                     idx++;
-                    auto while_optimized = ProcessWhile(program, idx, offset);
-                    optimized.insert(optimized.end(), while_optimized.begin(), while_optimized.end());
+                    auto optimized_while = ProcessWhile(program, idx, offset);
+                    optimized.insert(optimized.end(), optimized_while.begin(), optimized_while.end());
                     return false;
                 },
                 [&](const WhileEnd& x) {
