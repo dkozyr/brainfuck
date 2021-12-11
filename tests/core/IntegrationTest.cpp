@@ -25,12 +25,14 @@ TEST(Integration, HelloWorld) {
     Compiler bf;
     bf.Process(script.data(), script.data() + script.size());
     bf.Execute();
+    bf.ExecuteOptimized();
 }
 TEST(Integration, Bench1) {
     auto script = ReadFile(std::string{EXAMPLES_PATH} + "/bench-1.bf");
     Compiler bf;
     bf.Process(script.data(), script.data() + script.size());
     bf.Execute();
+    bf.ExecuteOptimized();
     std::cout << std::endl;
     // DebugScript(bf.GetProgram());
 }
@@ -40,13 +42,12 @@ TEST(Integration, Bench2) {
     Compiler bf;
     bf.Process(script.data(), script.data() + script.size());
     bf.Execute();
-    // std::cout << std::endl;
+    bf.ExecuteOptimized();
 }
 
-TEST(Integration, DISABLED_MandelbrotTiny) {
+TEST(Integration, MandelbrotTiny) {
     auto script = ReadFile(std::string{EXAMPLES_PATH} + "/mandelbrot-tiny.bf");
     Compiler bf;
     bf.Process(script.data(), script.data() + script.size());
-    bf.Execute();
-    std::cout << std::endl;
+    bf.ExecuteOptimized();
 }

@@ -4,6 +4,6 @@
 
 #include <iostream>
 
-TEST(Optimizer, Basic) {
+TEST(OperandWriterTest, Basic) {
     std::cout << "hello world" << std::endl;
 }
