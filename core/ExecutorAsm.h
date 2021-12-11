@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Operand.h"
-#include "operand_writer/OperandWriter.h"
+#include "../operand_writer/OperandWriter.h"
 
 #include <stack>
 
