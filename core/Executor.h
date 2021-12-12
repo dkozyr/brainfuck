@@ -38,7 +38,7 @@ public:
                     }
                 },
                 [&](const Output& x) { std::cout << data[offset + x.offset]; },
-                [&](const Input& x) { std::cin >> data[offset + x.offset]; },
+                [&](const Input& x) { data[offset + x.offset] = getchar(); },
             }, operand);
             ++idx;
         }

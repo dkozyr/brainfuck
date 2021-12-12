@@ -123,9 +123,12 @@ public:
                         ptr += OperandWriterOutputWithOffset(ptr, x.offset);
                     }
                 },
-                [&](const Input&) {
-                    std::cout << "NOT IMPLEMENTED" << std::endl;
-                    throw -1;
+                [&](const Input& x) {
+                    if(x.offset == 0) {
+                        ptr += OperandWriterInput(ptr);
+                    } else {
+                        ptr += OperandWriterInputWithOffset(ptr, x.offset);
+                    }
                 },
             }, operand);
         }

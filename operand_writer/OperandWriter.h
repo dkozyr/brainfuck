@@ -40,9 +40,9 @@ size_t OperandWriterWhileBeginWithOffset(uint8_t* data, int32_t offset, uint32_t
 size_t OperandWriterWhileEndWithOffset(uint8_t* data, int32_t offset, uint32_t jump_offset);
 
 size_t OperandWriterOutput(uint8_t* data);
-size_t OperandWriterInput(uint8_t* data); //TODO: implement
+size_t OperandWriterInput(uint8_t* data);
 
 size_t OperandWriterOutputWithOffset(uint8_t* data, int32_t offset);
-size_t OperandWriterInputWithOffset(uint8_t* data, int32_t offset); //TODO: implement
+size_t OperandWriterInputWithOffset(uint8_t* data, int32_t offset);
 
 }

@@ -225,6 +225,19 @@ OperandWriterOutput:mov     RSI, op_output
                     rep     movsb
                     ret
 
+op_input:           push    RBX
+                    xor     RAX, RAX                    ; 0 - sys_read
+                    mov     RDI, RAX                    ; 0 - stdin
+                    mov     RSI, RBX                    ; buffer
+                    mov     RDX, 1                      ; max output_length
+                    syscall
+                    pop     RBX
+OperandWriterInput: mov     RSI, op_input
+                    mov     RCX, (OperandWriterInput - op_input)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
 op_output_offset:   push    RBX
                     add     RBX, 0x12345678
 op_output_offset2:  mov     RAX, 1                      ; 1 - sys_write
@@ -238,6 +251,23 @@ OperandWriterOutputWithOffset:
                     mov     RSI, op_output_offset
                     mov     [RSI + (op_output_offset2 - op_output_offset) - 4], EAX
                     mov     RCX, (OperandWriterOutputWithOffset - op_output_offset)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
+op_input_offset:    push    RBX
+                    add     RBX, 0x12345678
+op_input_offset2:   xor     RAX, RAX                    ; 0 - sys_read
+                    mov     RDI, RAX                    ; 0 - stdin
+                    mov     RSI, RBX                    ; buffer
+                    mov     RDX, 1                      ; max output_length
+                    syscall
+                    pop     RBX
+OperandWriterInputWithOffset:
+                    mov     RAX, RSI
+                    mov     RSI, op_input_offset
+                    mov     [RSI + (op_input_offset2 - op_input_offset) - 4], EAX
+                    mov     RCX, (OperandWriterInputWithOffset - op_input_offset)
                     mov     RAX, RCX
                     rep     movsb
                     ret

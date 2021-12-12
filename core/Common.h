@@ -2,4 +2,4 @@
 
 #include <vector>
 
-inline constexpr auto kBrainfuckDataSize = 30000;
+inline constexpr auto kBrainfuckDataSize = 30'000; //TODO: option parameter
