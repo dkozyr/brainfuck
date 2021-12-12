@@ -51,3 +51,17 @@ TEST(Integration, MandelbrotTiny) {
     bf.Process(script.data(), script.data() + script.size());
     bf.ExecuteOptimized();
 }
+
+TEST(Integration, DISABLED_pi) {
+    auto script = ReadFile(std::string{EXAMPLES_PATH} + "/pi-digits.bf");
+    Compiler bf;
+    bf.Process(script.data(), script.data() + script.size());
+    bf.ExecuteOptimized();
+}
+
+TEST(Integration, DISABLED_e) {
+    auto script = ReadFile(std::string{EXAMPLES_PATH} + "/e.bf");
+    Compiler bf;
+    bf.Process(script.data(), script.data() + script.size());
+    bf.ExecuteOptimized(); //fails for 30000 data size
+}
