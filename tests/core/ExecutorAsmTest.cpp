@@ -71,6 +71,18 @@ TEST_F(ExecutorAsmTest, Mul) {
     ASSERT_EQ(3 + 7 * 4, (size_t)_data[1]);
 }
 
+TEST_F(ExecutorAsmTest, MulShift) {
+    std::vector<Operand> program = {
+        Set{.value = 2, .offset = 0},
+        Set{.value = 3, .offset = 1},
+        Set{.value = 4, .offset = 2},
+        Mul{.offset = 1, .value = 2, .factor_offset = 2},
+    };
+    ExecutorAsm::Run(program, _data.data());
+    ASSERT_EQ(2, (size_t)_data[0]);
+    ASSERT_EQ(3 + 2 * 4, (size_t)_data[1]);
+}
+
 TEST_F(ExecutorAsmTest, Output) {
     std::vector<Operand> program = {
         Set{.value = 'N', .offset = 0},

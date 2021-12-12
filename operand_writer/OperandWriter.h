@@ -21,6 +21,12 @@ size_t OperandWriterSet(uint8_t* data, uint8_t value);
 
 size_t OperandWriterMul(uint8_t* data, uint8_t value, int32_t factor_offset);
 size_t OperandWriterMulWithOffset(uint8_t* data, uint8_t value, int32_t factor_offset, int32_t offset);
+size_t OperandWriterMulShiftWithOffset(uint8_t* data, uint8_t value, int32_t factor_offset, int32_t offset);
+
+size_t OperandWriterCopy(uint8_t* data, int32_t src_offset);
+size_t OperandWriterCopyWithOffset(uint8_t* data, int32_t src_offset, int32_t dest_offset);
+
+size_t OperandWriterSubVariables(uint8_t* data, int32_t src_offset, int32_t dest_offset);
 
 size_t OperandWriterIncWithOffset(uint8_t* data, int32_t offset);
 size_t OperandWriterAddWithOffset(uint8_t* data, uint8_t value, int32_t offset);

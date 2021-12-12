@@ -61,9 +61,41 @@ public:
                 },
                 [&](const Mul& x) {
                     if(x.offset == 0) {
-                        ptr += OperandWriterMul(ptr, x.value, x.factor_offset);
+                        switch(x.value) {
+                            case 1:
+                                ptr += OperandWriterCopy(ptr, x.factor_offset);
+                                break;
+
+                            default:
+                                ptr += OperandWriterMul(ptr, x.value, x.factor_offset);
+                                break;
+                        }
                     } else {
-                        ptr += OperandWriterMulWithOffset(ptr, x.value, x.factor_offset, x.offset);
+                        switch(x.value) {
+                            case 1:
+                                ptr += OperandWriterCopyWithOffset(ptr, x.factor_offset, x.offset);
+                                break;
+
+                            case -1:
+                                ptr += OperandWriterSubVariables(ptr, x.factor_offset, x.offset);
+                                break;
+
+                            case 2:
+                                ptr += OperandWriterMulShiftWithOffset(ptr, 1, x.factor_offset, x.offset);
+                                break;
+
+                            case 4:
+                                ptr += OperandWriterMulShiftWithOffset(ptr, 2, x.factor_offset, x.offset);
+                                break;
+
+                            case 8:
+                                ptr += OperandWriterMulShiftWithOffset(ptr, 3, x.factor_offset, x.offset);
+                                break;
+
+                            default:
+                                ptr += OperandWriterMulWithOffset(ptr, x.value, x.factor_offset, x.offset);
+                                break;
+                        }
                     }
                 },
                 [&](const PtrAdd& x) {

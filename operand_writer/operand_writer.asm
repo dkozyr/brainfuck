@@ -9,6 +9,12 @@ global OperandWriterSet
 
 global OperandWriterMul
 global OperandWriterMulWithOffset
+global OperandWriterMulShiftWithOffset
+
+global OperandWriterCopy
+global OperandWriterCopyWithOffset
+
+global OperandWriterSubVariables
 
 global OperandWriterIncWithOffset
 global OperandWriterAddWithOffset
@@ -119,6 +125,55 @@ OperandWriterMulWithOffset:
                     mov     [RSI + 2 + 2], EDX
                     mov     [RSI + 2 + 6 + 2], ECX
                     mov     RCX, (OperandWriterMulWithOffset - op_mul_offset)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
+op_mul_shift_offset:
+                    mov     AL, [RBX + 0x12345678]
+                    shl     AL, byte 0xFF
+                    add     [RBX - 0x12345678], AL
+OperandWriterMulShiftWithOffset:
+                    mov     RAX, RSI
+                    mov     RSI, op_mul_shift_offset
+                    mov     [RSI + 2], EDX
+                    mov     [RSI + 6 + 2], AL
+                    mov     [RSI + 6 + 3 + 2], ECX
+                    mov     RCX, (OperandWriterMulShiftWithOffset - op_mul_shift_offset)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
+op_copy:            mov     AL, [RBX + 0x12345678]
+                    add     [RBX], AL
+OperandWriterCopy:  mov     RAX, RSI
+                    mov     RSI, op_copy
+                    mov     [RSI + 2], EAX
+                    mov     RCX, (OperandWriterCopy - op_copy)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
+op_copy_offset:     mov     AL, [RBX + 0x12345678]
+                    add     [RBX - 0x12345678], AL
+OperandWriterCopyWithOffset:
+                    mov     RAX, RSI
+                    mov     RSI, op_copy_offset
+                    mov     [RSI + 2], EAX
+                    mov     [RSI + 6 + 2], EDX
+                    mov     RCX, (OperandWriterCopyWithOffset - op_copy_offset)
+                    mov     RAX, RCX
+                    rep     movsb
+                    ret
+
+op_sub_var_offset:  mov     AL, [RBX + 0x12345678]
+                    sub     [RBX - 0x12345678], AL
+OperandWriterSubVariables:
+                    mov     RAX, RSI
+                    mov     RSI, op_sub_var_offset
+                    mov     [RSI + 2], EAX
+                    mov     [RSI + 6 + 2], EDX
+                    mov     RCX, (OperandWriterSubVariables - op_sub_var_offset)
                     mov     RAX, RCX
                     rep     movsb
                     ret
