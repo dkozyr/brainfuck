@@ -1,4 +1,4 @@
-#include "../../core/Optimizer.h"
+#include "Optimizer.h"
 
 #include <gtest/gtest.h>
 

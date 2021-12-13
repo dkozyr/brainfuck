@@ -1,4 +1,4 @@
-#include "../../core/Compiler.h"
+#include "Compiler.h"
 
 #include <gtest/gtest.h>
 
