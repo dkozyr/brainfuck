@@ -2,12 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-
 class ExecutorAsmTest : public ::testing::Test {
 public:
     ExecutorAsmTest()
-        : _data(kBrainfuckDataSize, 0) {
+        : _data(kDefaultDataSize, 0) {
     }
 
 protected:

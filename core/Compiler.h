@@ -48,8 +48,13 @@ public:
         }
     }
 
-    void ExecuteOptimized() { ExecutorAsm::Run(_program); }
-    void Execute() { Executor::Run(_program); }
+    void ExecuteOptimized(size_t data_size = kDefaultDataSize) {
+        ExecutorAsm::Run(_program, data_size);
+    }
+
+    void Execute(size_t data_size = kDefaultDataSize) {
+        Executor::Run(_program, data_size);
+    }
 
     const std::vector<Operand>& GetProgram() const { return _program; }
 

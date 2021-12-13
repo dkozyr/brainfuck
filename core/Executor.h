@@ -7,8 +7,8 @@
 
 class Executor {
 public:
-    static void Run(const std::vector<Operand>& program) {
-        std::vector<uint8_t> data(kBrainfuckDataSize, 0);
+    static void Run(const std::vector<Operand>& program, size_t data_size = kDefaultDataSize) {
+        std::vector<uint8_t> data(data_size, 0);
 
         const auto optimized = Optimizer::ProcessOffsets(program);
         const auto bracket_map = CreateBracketMap(optimized);

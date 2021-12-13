@@ -63,5 +63,5 @@ TEST(Integration, DISABLED_e) {
     auto script = ReadFile(std::string{EXAMPLES_PATH} + "/e.bf");
     Compiler bf;
     bf.Process(script.data(), script.data() + script.size());
-    bf.ExecuteOptimized(); //fails for 30000 data size
+    bf.ExecuteOptimized(1'000'000);
 }
