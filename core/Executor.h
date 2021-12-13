@@ -8,7 +8,7 @@
 class Executor {
 public:
     Executor(const std::vector<Operand>& program, size_t data_size = kDefaultDataSize)
-        : _program(Optimizer::ProcessOffsets(program))
+        : _program(Optimizer::Process(program))
         , _data(data_size, 0) {
     }
 

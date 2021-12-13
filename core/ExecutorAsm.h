@@ -13,7 +13,7 @@ public:
     {}
 
     void Run() {
-        auto optimized = Optimizer::ProcessOffsets(_program);
+        auto optimized = Optimizer::Process(_program);
         Run(optimized, _data.data());
     }
 

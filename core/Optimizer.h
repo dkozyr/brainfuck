@@ -7,7 +7,7 @@
 
 class Optimizer {
 public:
-    static std::vector<Operand> ProcessOffsets(const std::vector<Operand>& program) {
+    static std::vector<Operand> Process(const std::vector<Operand>& program) {
         const auto size = program.size();
 
         std::vector<Operand> optimized;

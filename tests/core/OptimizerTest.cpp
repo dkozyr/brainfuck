@@ -16,7 +16,7 @@ TEST(Optimizer, Basic) {
         Add{.count = 2, .offset = 0},
     };
 
-    auto optimized = Optimizer::ProcessOffsets(program);
+    auto optimized = Optimizer::Process(program);
     ASSERT_EQ(2, optimized.size());
     EXPECT_EQ(target, optimized);
 }
@@ -47,7 +47,7 @@ TEST(Optimizer, While) {
         WhileEnd{.offset = 1},
     };
 
-    auto optimized = Optimizer::ProcessOffsets(program);
+    auto optimized = Optimizer::Process(program);
     ASSERT_EQ(target.size(), optimized.size());
     EXPECT_EQ(target, optimized);
 }
@@ -71,7 +71,7 @@ TEST(Optimizer, Assign) {
         Assign{.value = 42},
     };
 
-    auto optimized = Optimizer::ProcessOffsets(program);
+    auto optimized = Optimizer::Process(program);
     // DebugProgram(program);
     // DebugProgram(optimized);
     ASSERT_EQ(target.size(), optimized.size());
@@ -96,7 +96,7 @@ TEST(Optimizer, Mul) {
         Assign{.value = 0, .offset = 0},
     };
 
-    auto optimized = Optimizer::ProcessOffsets(program);
+    auto optimized = Optimizer::Process(program);
     ASSERT_EQ(target.size(), optimized.size());
     EXPECT_EQ(target, optimized);
 }

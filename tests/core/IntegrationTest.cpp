@@ -15,7 +15,7 @@ std::string ReadFile(const boost::filesystem::path& path) {
 }
 
 void DebugScript(const std::vector<Operand>& program) {
-    auto optimized = Optimizer::ProcessOffsets(program);
+    auto optimized = Optimizer::Process(program);
     DebugProgram(program);
     DebugProgram(optimized);
 }
