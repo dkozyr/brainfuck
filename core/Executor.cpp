@@ -42,7 +42,6 @@ void Executor::Run() {
     }
 }
 
-//In fact it could be refactored with unordered_map, but let's leave bimap here
 BracketMap Executor::CreateBracketMap(const std::vector<Operand>& program) {
     BracketMap bracket_map;
     std::stack<size_t> brackets_stack;
