@@ -7,12 +7,23 @@
 
 class ExecutorAsm {
 public:
-    static void Run(const std::vector<Operand>& program, size_t data_size = kDefaultDataSize) {
-        std::vector<uint8_t> data(data_size, 0);
-        const auto optimized = Optimizer::ProcessOffsets(program);
-        Run(optimized, data.data());
+    ExecutorAsm(const std::vector<Operand>& program, size_t data_size = kDefaultDataSize)
+        : _program(program)
+        , _data(data_size, 0)
+    {}
+
+    void Run() {
+        auto optimized = Optimizer::ProcessOffsets(_program);
+        Run(optimized, _data.data());
     }
 
+    void RunWithoutOptimization() {
+        Run(_program, _data.data());
+    }
+
+    const std::vector<uint8_t>& GetData() const { return _data; }
+
+private:
     static void Run(const std::vector<Operand>& program, uint8_t* data) {
         std::vector<uint8_t> asm_code(kAsmCodeSize + kPageSize);
         auto entry_point = PrepareGeneratedCodeEntryPoint(asm_code.data());
@@ -169,6 +180,18 @@ public:
         ExecuteGeneratedCode(entry_point, data);
     }
 
+    static uint8_t* PrepareGeneratedCodeEntryPoint(uint8_t* ptr) {
+        auto ptr_aligned = ((reinterpret_cast<size_t>(ptr) + (kPageSize - 1)) / kPageSize) * kPageSize;
+        auto entry_point = reinterpret_cast<uint8_t*>(ptr_aligned);
+        mprotect(entry_point, kAsmCodeSize, PROT_READ | PROT_WRITE | PROT_EXEC);
+        return entry_point;
+    }
+
+    static void ExecuteGeneratedCode(uint8_t* entry_point, uint8_t* data) {
+        __builtin___clear_cache(entry_point, entry_point + kAsmCodeSize);
+        ((void(*)(uint8_t*))entry_point)(data);
+    }
+
 private:
     static constexpr auto kAsmCodeSize = 1024 * 1024;
     static constexpr auto kPageSize = 65536;
@@ -196,15 +219,7 @@ private:
         };
     }
 
-    static uint8_t* PrepareGeneratedCodeEntryPoint(uint8_t* ptr) {
-        auto ptr_aligned = ((reinterpret_cast<size_t>(ptr) + (kPageSize - 1)) / kPageSize) * kPageSize;
-        auto entry_point = reinterpret_cast<uint8_t*>(ptr_aligned);
-        mprotect(entry_point, kAsmCodeSize, PROT_READ | PROT_WRITE | PROT_EXEC);
-        return entry_point;
-    }
-
-    static void ExecuteGeneratedCode(uint8_t* entry_point, uint8_t* data) {
-        __builtin___clear_cache(entry_point, entry_point + kAsmCodeSize);
-        ((void(*)(uint8_t*))entry_point)(data);
-    }
+private:
+    const std::vector<Operand>& _program;
+    std::vector<uint8_t> _data;
 };

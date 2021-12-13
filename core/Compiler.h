@@ -49,11 +49,13 @@ public:
     }
 
     void ExecuteOptimized(size_t data_size = kDefaultDataSize) {
-        ExecutorAsm::Run(_program, data_size);
+        ExecutorAsm executor(_program, data_size);
+        executor.Run();
     }
 
     void Execute(size_t data_size = kDefaultDataSize) {
-        Executor::Run(_program, data_size);
+        Executor executor(_program, data_size);
+        executor.Run();
     }
 
     const std::vector<Operand>& GetProgram() const { return _program; }
