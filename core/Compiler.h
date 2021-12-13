@@ -28,7 +28,7 @@ public:
                             if(sub && (sub->count == 1)) {
                                 _program.pop_back();
                                 _program.pop_back();
-                                Process(Set{});
+                                Process(Assign{});
                                 break;
                             }
 
@@ -36,7 +36,7 @@ public:
                             if(add && (add->count == 1)) {
                                 _program.pop_back();
                                 _program.pop_back();
-                                Process(Set{});
+                                Process(Assign{});
                                 break;
                             }
                         }
@@ -63,14 +63,14 @@ private:
         auto& prev = _program.back();
         std::visit(overloaded {
             [&](const Add& x) {
-                if(auto v = std::get_if<Set>(&prev); v) {
+                if(auto v = std::get_if<Assign>(&prev); v) {
                     v->value++;
                 } else {
                     CheckOperandWithPreviousAndInsert<Add, Sub>(x, prev);
                 }
             },
             [&](const Sub& x) {
-                if(auto v = std::get_if<Set>(&prev); v) {
+                if(auto v = std::get_if<Assign>(&prev); v) {
                     v->value--;
                 } else {
                     CheckOperandWithPreviousAndInsert<Sub, Add>(x, prev);
@@ -78,7 +78,7 @@ private:
             },
             [&](const PtrAdd& x) { CheckOperandWithPreviousAndInsert<PtrAdd, PtrSub>(x, prev); },
             [&](const PtrSub& x) { CheckOperandWithPreviousAndInsert<PtrSub, PtrAdd>(x, prev); },
-            [&](const Set& x) { _program.push_back(x); },
+            [&](const Assign& x) { _program.push_back(x); },
             [&](const Mul& x) { throw -1; },
             [&](const WhileBegin& x) { _program.push_back(x); },
             [&](const WhileEnd& x) { _program.push_back(x); },

@@ -20,7 +20,7 @@ public:
             std::visit(overloaded {
                 [&](const Add& x) { data[offset + x.offset] += x.count; },
                 [&](const Sub& x) { data[offset + x.offset] -= x.count; },
-                [&](const Set& x) { data[offset + x.offset] = x.value; },
+                [&](const Assign& x) { data[offset + x.offset] = x.value; },
                 [&](const Mul& x) {
                     auto factor = data[offset + x.factor_offset];
                     data[offset + x.offset] += x.value * factor;

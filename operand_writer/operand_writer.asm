@@ -5,7 +5,7 @@ global OperandWriterInc
 global OperandWriterAdd
 global OperandWriterDec
 global OperandWriterSub
-global OperandWriterSet
+global OperandWriterAssign
 
 global OperandWriterMul
 global OperandWriterMulWithOffset
@@ -20,7 +20,7 @@ global OperandWriterIncWithOffset
 global OperandWriterAddWithOffset
 global OperandWriterDecWithOffset
 global OperandWriterSubWithOffset
-global OperandWriterSetWithOffset
+global OperandWriterAssignWithOffset
 
 global OperandWriterPtrInc
 global OperandWriterPtrAdd
@@ -94,11 +94,12 @@ OperandWriterSub:   mov     RAX, RSI
                     rep     movsb
                     ret
 
-op_set:             mov     byte [RBX], 0xFF
-OperandWriterSet:   mov     RAX, RSI
-                    mov     RSI, op_set
-                    mov     [RSI + (OperandWriterSet - op_set) - 1], AL
-                    mov     RCX, (OperandWriterSet - op_set)
+op_assign:          mov     byte [RBX], 0xFF
+OperandWriterAssign:
+                    mov     RAX, RSI
+                    mov     RSI, op_assign
+                    mov     [RSI + (OperandWriterAssign - op_assign) - 1], AL
+                    mov     RCX, (OperandWriterAssign - op_assign)
                     mov     RAX, RCX
                     rep     movsb
                     ret
@@ -220,13 +221,13 @@ OperandWriterSubWithOffset:
                     rep     movsb
                     ret
 
-op_set_offset:      mov     byte [RBX - 0x12345678], 0xFF
-OperandWriterSetWithOffset:
+op_assign_offset:   mov     byte [RBX - 0x12345678], 0xFF
+OperandWriterAssignWithOffset:
                     mov     RAX, RSI
-                    mov     RSI, op_set_offset
-                    mov     [RSI + (OperandWriterSetWithOffset - op_set_offset) - 1], AL
-                    mov     [RSI + (OperandWriterSetWithOffset - op_set_offset) - 1 - 4], EDX
-                    mov     RCX, (OperandWriterSetWithOffset - op_set_offset)
+                    mov     RSI, op_assign_offset
+                    mov     [RSI + (OperandWriterAssignWithOffset - op_assign_offset) - 1], AL
+                    mov     [RSI + (OperandWriterAssignWithOffset - op_assign_offset) - 1 - 4], EDX
+                    mov     RCX, (OperandWriterAssignWithOffset - op_assign_offset)
                     mov     RAX, RCX
                     rep     movsb
                     ret

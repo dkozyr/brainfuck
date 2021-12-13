@@ -52,11 +52,11 @@ public:
                         }
                     }
                 },
-                [&](const Set& x) {
+                [&](const Assign& x) {
                     if(x.offset == 0) {
-                        ptr += OperandWriterSet(ptr, x.value);
+                        ptr += OperandWriterAssign(ptr, x.value);
                     } else {
-                        ptr += OperandWriterSetWithOffset(ptr, x.value, x.offset);
+                        ptr += OperandWriterAssignWithOffset(ptr, x.value, x.offset);
                     }
                 },
                 [&](const Mul& x) {

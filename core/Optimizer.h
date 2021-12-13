@@ -21,10 +21,10 @@ public:
                 [&](const Mul& x) { /*impossible*/ throw -1; },
                 [&](const PtrAdd& x) { offset += x.count; },
                 [&](const PtrSub& x) { offset -= x.count; },
-                [&](const Set& x) {
+                [&](const Assign& x) {
                     offset_to_delta[offset] = 0;
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    optimized.push_back(Set{.value = x.value, .offset = offset});
+                    optimized.push_back(Assign{.value = x.value, .offset = offset});
                 },
                 [&](const WhileBegin& x) {
                     PushArithmeticOperands(offset_to_delta, optimized);
@@ -66,10 +66,10 @@ private:
                 [&](const Mul& x) { /*impossible*/ throw -1; return false; },
                 [&](const PtrAdd& x) { offset += x.count; return false; },
                 [&](const PtrSub& x) { offset -= x.count; return false; },
-                [&](const Set& x) {
+                [&](const Assign& x) {
                     offset_to_delta[offset] = 0;
                     PushArithmeticOperands(offset_to_delta, optimized);
-                    optimized.push_back(Set{.value = x.value, .offset = offset});
+                    optimized.push_back(Assign{.value = x.value, .offset = offset});
                     return false;
                 },
                 [&](const WhileBegin& x) {
@@ -90,7 +90,7 @@ private:
                                 optimized.push_back(Mul{.offset = value.first, .value = value.second, .factor_offset = offset});
                             }
                         }
-                        optimized.push_back(Set{.value = 0, .offset = offset});
+                        optimized.push_back(Assign{.value = 0, .offset = offset});
                     } else {
                         PushArithmeticOperands(offset_to_delta, optimized);
                         PushDeltaOperand(offset, while_begin_offset, optimized);

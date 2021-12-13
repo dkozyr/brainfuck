@@ -17,7 +17,7 @@ size_t OperandWriterInc(uint8_t* data);
 size_t OperandWriterAdd(uint8_t* data, uint8_t value);
 size_t OperandWriterDec(uint8_t* data);
 size_t OperandWriterSub(uint8_t* data, uint8_t value);
-size_t OperandWriterSet(uint8_t* data, uint8_t value);
+size_t OperandWriterAssign(uint8_t* data, uint8_t value);
 
 size_t OperandWriterMul(uint8_t* data, uint8_t value, int32_t factor_offset);
 size_t OperandWriterMulWithOffset(uint8_t* data, uint8_t value, int32_t factor_offset, int32_t offset);
@@ -32,7 +32,7 @@ size_t OperandWriterIncWithOffset(uint8_t* data, int32_t offset);
 size_t OperandWriterAddWithOffset(uint8_t* data, uint8_t value, int32_t offset);
 size_t OperandWriterDecWithOffset(uint8_t* data, int32_t offset);
 size_t OperandWriterSubWithOffset(uint8_t* data, uint8_t value, int32_t offset);
-size_t OperandWriterSetWithOffset(uint8_t* data, uint8_t value, int32_t offset);
+size_t OperandWriterAssignWithOffset(uint8_t* data, uint8_t value, int32_t offset);
 
 size_t OperandWriterPtrInc(uint8_t* data);
 size_t OperandWriterPtrAdd(uint8_t* data, uint32_t value);

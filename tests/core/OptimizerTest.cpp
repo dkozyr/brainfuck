@@ -52,23 +52,23 @@ TEST(Optimizer, While) {
     EXPECT_EQ(target, optimized);
 }
 
-TEST(Optimizer, Set) {
+TEST(Optimizer, Assign) {
     std::vector<Operand> program = {
         WhileBegin{},
         Sub{.count = 1},
         PtrAdd{.count = 1},
-        Set{.value = 10},
+        Assign{.value = 10},
         PtrSub{.count = 1},
         WhileEnd{},
-        Set{.value = 42},
+        Assign{.value = 42},
     };
 
     std::vector<Operand> target = {
         WhileBegin{},
         Sub{.count = 1},
-        Set{.value = 10, .offset = 1},
+        Assign{.value = 10, .offset = 1},
         WhileEnd{},
-        Set{.value = 42},
+        Assign{.value = 42},
     };
 
     auto optimized = Optimizer::ProcessOffsets(program);
@@ -93,7 +93,7 @@ TEST(Optimizer, Mul) {
     std::vector<Operand> target = {
         Mul{.offset = 2, .value = 2, .factor_offset = 0},
         Mul{.offset = 1, .value = 1, .factor_offset = 0},
-        Set{.value = 0, .offset = 0},
+        Assign{.value = 0, .offset = 0},
     };
 
     auto optimized = Optimizer::ProcessOffsets(program);
