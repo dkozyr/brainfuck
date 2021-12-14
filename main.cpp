@@ -24,13 +24,12 @@ int main(int argc, char* argv[]) {
 
     try {
         std::cout << "Script: " << script << std::endl;
-        const auto array_size = vm["array"].as<size_t>();
 
         Compiler bf(script);
         if(vm["optimization"].as<bool>()) {
-            bf.ExecuteOptimized(array_size);
+            bf.ExecuteOptimized(vm["array"].as<size_t>());
         } else {
-            bf.Execute(array_size);
+            bf.Execute();
         }
     } catch(const std::exception& e) {
         std::cerr << "Failed! Exception: " << e.what() << std::endl;
