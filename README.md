@@ -31,10 +31,8 @@ More details on [wiki](https://en.wikipedia.org/wiki/Brainfuck)
 |     -     |     --*ptr;     | dec byte [RBX]        |
 |     .     | putchar(*ptr);  | sys_write             |
 |     ,     |*ptr = getchar();| sys_read              |
-|     [     |  while (*ptr) { | cmp byte [RBX], 0     |
-|           |                 | jz  @to_close_bracket |
-|     ]     |       }         | cmp byte [RBX], 0     |
-|           |                 | jnz @to_open_bracket  |
+|     [     |  while (*ptr) { | cmp byte [RBX], 0<br> jz  @to_close_bracket |
+|     ]     |       }         | cmp byte [RBX], 0<br> jnz @to_open_bracket  |
 
 
 ## Mandelbrot (tiny)
