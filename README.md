@@ -93,23 +93,33 @@ sys	0m0,000s
 
 Brainfuck interpreter above takes too much CPU time on "operand interpreting" while "operand executing" in most cases only 1 CPU instruction (increment/decrement pointer, increment/decrement referenced value) and with several hierarchical cycles time wasting grows exponentially.
 
-Let's optimize it! We interpret each symbol only once and generate code for it using "assembler equivalent". So the process is almost the same, but interpreter doesn't execute each operand immediately but it executes the whole generated code.
+Let's optimize it! We interpret each symbol only once and generate code for it using "assembler equivalent". So the process is almost the same, interpreter generates instructions for each operand in some memory and doesn't execute each operand immediately, then it executes the whole generated code.
 
-[interpreter_with_codegen.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm) has a [low-level trick](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm#L86) to finish generated code correctly - the last generated operand is `ret` and we `push` address to proceed this code after executing a script:
+[interpreter_with_codegen.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm) has a [low-level trick](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm#L86) to finish generated code correctly - the last generated operand is `ret` and we `push` address to proceed needed code after script executing:
 
 ```
     push    _close_fd_and_exit
     jmp     the_code
 ```
 
-Now tiny Mandelbrot script takes 21 times(!) less time, only 0.8 sec:
+Now tiny Mandelbrot script takes 21 times(!) less time and only 0.8 sec:
 ```
 real	0m0,814s
 user	0m0,810s
 sys	0m0,004s
 ```
 
-Final version:
+## Interpreter with optimizations
+
+[fast.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/fast.asm)
+
+```
+real	0m0,235s
+user	0m0,235s
+sys	0m0,000s
+```
+
+## Final version:
 
 ```
 real	0m0,166s
@@ -120,3 +130,9 @@ sys	0m0,000s
 ## Fastest Brainfuck Interpreter
 
 https://github.com/rdebath/Brainfuck/tree/master/tritium
+
+```
+real	0m0,???s
+user	0m0,???s
+sys	0m0,000s
+```
