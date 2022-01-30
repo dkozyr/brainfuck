@@ -19,9 +19,24 @@ It consists of 8 commands:
 
 A brainfuck program is a sequence of the commands, possibly interspersed with other characters (which are ignored). The commands are executed sequentially, with some exceptions: an instruction pointer begins at the first command, and each command it points to is executed, after which it normally moves forward to the next command. The program terminates when the instruction pointer moves past the last command.
 
-More details on [wiki](https://en.wikipedia.org/wiki/Brainfuck)
+More details on [wiki](https://en.wikipedia.org/wiki/Brainfuck).
 
-## Basic idea
+## Hello world example
+
+[hello.bf](https://github.com/dkozyr/brainfuck/blob/main/examples/hello.bf) script:
+
+```
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.++
++.------.--------.>>+.>++.
+```
+
+It produces output:
+
+```
+Hello World!
+```
+
+## Interpreter - basic idea
 
 | Character |  C equivalent   | Assembler equivalent  |
 |:---------:|:----------------|:----------------------|
