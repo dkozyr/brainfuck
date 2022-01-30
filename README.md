@@ -21,7 +21,7 @@ A brainfuck program is a sequence of the commands, possibly interspersed with ot
 
 More details on [wiki](https://en.wikipedia.org/wiki/Brainfuck).
 
-## Hello world example
+## "Hello world" example
 
 [hello.bf](https://github.com/dkozyr/brainfuck/blob/main/examples/hello.bf) script:
 
@@ -38,6 +38,8 @@ Hello World!
 
 ## Interpreter - basic idea
 
+Each brainfuck character (operand) has simple C and Assembler equivalent:
+
 | Character |  C equivalent   | Assembler equivalent  |
 |:---------:|:----------------|:----------------------|
 |     >     |     ++ptr;      | inc RBX               |
@@ -49,8 +51,12 @@ Hello World!
 |     [     |  while (*ptr) { | cmp byte [RBX], 0<br> jz  @to_close_bracket |
 |     ]     |       }         | cmp byte [RBX], 0<br> jnz @to_open_bracket  |
 
+and on start `char* ptr` and register `RBX` are initialized to point to an array of 30'000 zero bytes. Interpreter reads brainfuck stript and processes operands one by one:
+* get symbol
+* find corresponding C/ASM equivalent
+* execute the equivalent
 
-## Mandelbrot (tiny)
+Such interpreter easy to read ([interpreter.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter.asm)) but it works quite slow: 17.5 seconds for [tiny Mandelbrot](https://github.com/dkozyr/brainfuck/blob/main/examples/mandelbrot-tiny.bf) script:
 
 ```
 AAAAAAAABBBBBBBBCCCCCCCCCCCCCCCCCCDDDDEFEEDDDCCCCCBBBBBBBBBBBBBBB
@@ -78,6 +84,34 @@ AAAAABBBCCCCCCCCCCCCCCCCCDDDDDDDEEEFGPVT  Q[HEEEEDDDCCCCCCBBBBBBB
 AAAAAABBBBCCCCCCCCCCCCCCCCCDDDDDDDEEEFGHKPIGFEDDDDDCCCCCBBBBBBBBB
 AAAAAAABBBBBBCCCCCCCCCCCCCCCCCDDDDDDEEFIKGGGDDDDDCCCCBBBBBBBBBBBB
 
+real	0m17,495s
+user	0m17,476s
+sys	0m0,000s
+```
+
+## Interpreter with code generator
+
+Brainfuck interpreter above takes too much CPU time on "operand interpreting" while "operand executing" in most cases only 1 CPU instruction (increment/decrement pointer, increment/decrement referenced value) and with several hierarchical cycles time wasting grows exponentially.
+
+Let's optimize it! We interpret each symbol only once and generate code for it using "assembler equivalent". So the process is almost the same, but interpreter doesn't execute each operand immediately but it executes the whole generated code.
+
+[interpreter_with_codegen.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm) has a [low-level trick](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm#L86) to finish generated code correctly - the last generated operand is `ret` and we `push` address to proceed this code after executing a script:
+
+```
+    push    _close_fd_and_exit
+    jmp     the_code
+```
+
+Now tiny Mandelbrot script takes 21 times(!) less time, only 0.8 sec:
+```
+real	0m0,814s
+user	0m0,810s
+sys	0m0,004s
+```
+
+Final version:
+
+```
 real	0m0,166s
 user	0m0,165s
 sys	0m0,000s
