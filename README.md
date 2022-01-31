@@ -111,6 +111,16 @@ sys	0m0,004s
 
 ## Interpreter with optimizations
 
+Implementation above looks like fastest interpreter, but in fact it could be faster :)
+
+Look at [hello.bf](https://github.com/dkozyr/brainfuck/blob/main/examples/hello.bf) script again. There are some operands repeat several times and could be replaced with only one 1 CPU instruction:
+
+|  Script   |  ASM equivalent | Optimization |
+|:---------:|:----------------|:----------------------|
+|   +++++   | inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX] | add byte [RBX], 5 |
+|    <<<    | dec RBX<br>dec RBX<br>dec RBX | sub RBX, 3 |
+|   +>>>++  | inc byte [RBX]<br>inc RBX<br>inc RBX<br>inc RBX<br>inc byte [RBX]<br>inc byte [RBX] | inc byte [RBX]<br>add byte [RBX+3], 2 |
+
 [fast.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/fast.asm)
 
 ```
@@ -132,7 +142,7 @@ sys	0m0,000s
 https://github.com/rdebath/Brainfuck/tree/master/tritium
 
 ```
-real	0m0,???s
-user	0m0,???s
-sys	0m0,000s
+real	0m0,145s
+user	0m0,141s
+sys	0m0,004s
 ```
