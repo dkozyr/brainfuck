@@ -126,9 +126,9 @@ sys	0m0,000s
 
 ## Final version:
 
-Further [optimizations](http://calmerthanyouare.org/2015/01/07/optimizing-brainfuck.html) are possible, but we need higher language for brainfuck code interpreting and I choose C++ (C++17).
+Further [optimizations](http://calmerthanyouare.org/2015/01/07/optimizing-brainfuck.html) are possible, but we need a higher level language for brainfuck code interpreting and I've chosen C++ (C++17).
 
-[core/Optimizer.cpp](https://github.com/dkozyr/brainfuck/blob/main/core/Optimizer.cpp) is most challenging part, but finally it works and Mandelbrot (tiny) script is executed for only ~160ms (100x faster than my first interpreter).
+[core/Optimizer.cpp](https://github.com/dkozyr/brainfuck/blob/main/core/Optimizer.cpp) is the most challenging part, but finally it works and Mandelbrot (tiny) script runs in only ~160ms (100x faster than my first interpreter).
 
 ```
 real	0m0,163s
