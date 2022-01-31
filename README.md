@@ -1,4 +1,4 @@
-# Brainfuck Fast Interpreter (NASM, x64)
+# Fast Brainfuck Interpreter (NASM, x64)
 
 ## Brainfuck language
 
@@ -119,10 +119,12 @@ Look at [hello.bf](https://github.com/dkozyr/brainfuck/blob/main/examples/hello.
 |:---------:|:----------------|:----------------------|
 |   +++++   | inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX]<br>inc byte [RBX] | add byte [RBX], 5 |
 |    <<<    | dec RBX<br>dec RBX<br>dec RBX | sub RBX, 3 |
-|   +>>>++  | inc byte [RBX]<br>inc RBX<br>inc RBX<br>inc RBX<br>inc byte [RBX]<br>inc byte [RBX] | inc byte [RBX]<br>add byte [RBX+3], 2 |
+|   >+>+<<  | inc RBX<br>inc byte [RBX]<br>inc RBX<br>inc byte [RBX] | inc byte [RBX+1]<br>inc byte [RBX+2] |
+|    [-]    | ...             | mov byte [RBX], 0     |
+
+Now we have to control pointer position to reduce useless movements, but such optimizations give us 3x speed-up.
 
 [fast.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/fast.asm)
-
 ```
 real	0m0,235s
 user	0m0,235s
@@ -131,18 +133,27 @@ sys	0m0,000s
 
 ## Final version:
 
+Further [optimizations](http://calmerthanyouare.org/2015/01/07/optimizing-brainfuck.html) are possible, but we need higher language for brainfuck code interpreting and I choose C++ (C++17).
+
+[core/Optimizer.cpp](https://github.com/dkozyr/brainfuck/blob/main/core/Optimizer.cpp) is most challenging part, but finally it works and Mandelbrot (tiny) script is executed for only ~160ms (100x faster than my first interpreter).
+
 ```
-real	0m0,166s
-user	0m0,165s
+real	0m0,163s
+user	0m0,163s
 sys	0m0,000s
 ```
 
 ## Fastest Brainfuck Interpreter
 
-https://github.com/rdebath/Brainfuck/tree/master/tritium
+> Perfection is not attainable. But if we chase perfection, we can catch excellence.
+>   -- Vince Lombardi
+
+Tritium is still the best:
 
 ```
 real	0m0,145s
 user	0m0,141s
 sys	0m0,004s
 ```
+
+https://github.com/rdebath/Brainfuck/tree/master/tritium
