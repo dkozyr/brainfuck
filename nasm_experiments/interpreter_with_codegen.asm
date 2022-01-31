@@ -83,8 +83,7 @@ _start:             xor     RAX, RAX
                     ; execute generated code -----------------------------------
                     mov     RBX, result
 
-                    push    _close_fd_and_exit
-                    jmp     the_code
+                    call    the_code
 
                     ; exit -----------------------------------------------------
 _close_fd_and_exit: mov     RAX, 3                      ; sys_close

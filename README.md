@@ -95,13 +95,6 @@ Brainfuck interpreter above takes too much CPU time on "operand interpreting" wh
 
 Let's optimize it! We interpret each symbol only once and generate code for it using "assembler equivalent". So the process is almost the same, interpreter generates instructions for each operand in some memory and doesn't execute each operand immediately, then it executes the whole generated code.
 
-[interpreter_with_codegen.asm](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm) has a [low-level trick](https://github.com/dkozyr/brainfuck/blob/main/nasm_experiments/interpreter_with_codegen.asm#L86) to finish generated code correctly - the last generated operand is `ret` and we `push` address to proceed needed code after script executing:
-
-```
-    push    _close_fd_and_exit
-    jmp     the_code
-```
-
 Now tiny Mandelbrot script takes 21 times(!) less time and only 0.8 sec:
 ```
 real	0m0,814s

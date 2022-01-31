@@ -153,8 +153,7 @@ _do_not_out_to_bin:
                     mov     RBX, result
                     mov     RDI, output
 
-                    push    _close_fd_and_exit
-                    jmp     the_code
+                    call    the_code
 
                     ; exit -----------------------------------------------------
 _close_fd_and_exit: mov     RAX, 3                      ; sys_close
