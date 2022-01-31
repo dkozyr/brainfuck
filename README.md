@@ -146,6 +146,7 @@ sys	0m0,000s
 ## Fastest Brainfuck Interpreter
 
 > Perfection is not attainable. But if we chase perfection, we can catch excellence.
+
 *Vince Lombardi*
 
 Tritium is still the best:
